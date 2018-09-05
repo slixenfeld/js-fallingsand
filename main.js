@@ -27,17 +27,10 @@ function Pixel(changed,state){
   this.changed = changed;
   this.state = 0;
   this.next_state = 0;
-  var rand_clr = 11 + Math.round((Math.random() * 20)+1);
 
-  if(active_color == "red"){
-    this.color = "#" + rand_clr + ""+ "00" + "" + rand_clr;
-  }
-  if(active_color == "blue"){
-    this.color = "#" + "00" + ""+ rand_clr + "" + rand_clr;
-  }
-  if(active_color == "green"){
-    this.color = "#" + rand_clr + ""+ rand_clr + "" + "00";
-  }
+  var rand_clr = 11 + Math.round((Math.random() * 20)+1);
+  this.color = "#" + rand_clr + ""+ "00" + "" + rand_clr;
+
 
 }
 
@@ -107,6 +100,7 @@ canvas.addEventListener('mousedown',function(evt){mousedown = true;
   }
   if(Blue_Button.checkClicked(mouse_x,mouse_y)){
     active_color = "blue";
+    alert(active_color);
   }
 
 },false);
@@ -129,6 +123,20 @@ function place_pixel(){
       for(var j = 0; j < brush_size; j++){
         pixel2d[grid_x+j][grid_y+i].next_state = 1;
         pixel2d[grid_x+j][grid_y+i].changed = 1;
+
+        var rand_clr = 11 + Math.round((Math.random() * 20)+1);
+        var clr = "";
+        if(active_color == "red"){
+          clr = "#" + rand_clr + ""+ "00" + "" + rand_clr;
+        }
+        if(active_color == "blue"){
+          clr = "#" + "00" + ""+ rand_clr + "" + rand_clr;
+        }
+        if(active_color == "green"){
+          clr = "#" + rand_clr + ""+ rand_clr + "" + "00";
+        }
+
+        pixel2d[grid_x+j][grid_y+i].color = clr;
       }
     }
   }
@@ -153,23 +161,33 @@ function draw_grid(){
         //Space down free
             pixel2d[j][i+1].next_state = 1;
             pixel2d[j][i+1].changed = true;
+            pixel2d[j][i+1].color = pixel2d[j][i].color;
+
             pixel2d[j][i].next_state = 0;
             pixel2d[j][i].changed = true;
+            pixel2d[j][i].color = "#EEEEEE";
+
         }
         else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
         //Space right down free
             pixel2d[j+1][i+1].next_state = 1;
             pixel2d[j+1][i+1].changed = true;
+            pixel2d[j+1][i+1].color = pixel2d[j][i].color;
+
             pixel2d[j][i].next_state = 0;
             pixel2d[j][i].changed = true;
+            pixel2d[j][i].color = "#EEEEEE";
 
         }
         else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
         //Space left down free
             pixel2d[j-1][i+1].next_state = 1;
             pixel2d[j-1][i+1].changed = true;
+            pixel2d[j-1][i+1].color = pixel2d[j][i].color;
+
             pixel2d[j][i].next_state = 0;
             pixel2d[j][i].changed = true;
+            pixel2d[j][i].color = "#EEEEEE";
 
         }
 
