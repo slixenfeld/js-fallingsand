@@ -13,7 +13,8 @@ var grid_size = 40;
 var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
-var brush_size = 2;
+var eraser = false;
+var brush_size = 5;
 var pixel2d = [];
 
 var active_color = "red";
@@ -60,6 +61,7 @@ Setting_Button.prototype.draw = function(){
 var Red_Button = new Setting_Button("Rot",640,50);
 var Green_Button = new Setting_Button("Green",640,150);
 var Blue_Button = new Setting_Button("Blue",640,250);
+var Eraser_Button = new Setting_Button("Eraser",640,400);
 
 
 
@@ -92,16 +94,19 @@ canvas.addEventListener('mousemove',function(evt){
   mouse_y = mousePos.y;
 },false);
 canvas.addEventListener('mousedown',function(evt){mousedown = true;
-  if(Red_Button.checkClicked(mouse_x,mouse_y)){
-    active_color = "red";
-  }
-  if(Green_Button.checkClicked(mouse_x,mouse_y)){
-    active_color = "green";
-  }
-  if(Blue_Button.checkClicked(mouse_x,mouse_y)){
-    active_color = "blue";
-    alert(active_color);
-  }
+
+    if(Red_Button.checkClicked(mouse_x,mouse_y)){
+      active_color = "red";
+    }
+    if(Green_Button.checkClicked(mouse_x,mouse_y)){
+      active_color = "green";
+    }
+    if(Blue_Button.checkClicked(mouse_x,mouse_y)){
+      active_color = "blue";
+    }
+    if(Eraser_Button.checkClicked(mouse_x,mouse_y)){
+      eraser = true;
+    }
 
 },false);
 canvas.addEventListener('mouseup',function(evt){mousedown=false;
@@ -114,6 +119,20 @@ alert("["+Math.round(mouse_x/(640/grid_size)-1)+ "]["+Math.round(mouse_y/(640/gr
 function update(){
 }
 
+function delete_pixel(){
+  if(mouse_x<Width&&mouse_y<Height){
+    var grid_x = Math.round(mouse_x/(640/grid_size)-1);
+    var grid_y = Math.round(mouse_y/(640/grid_size)-1);
+    for(var i = 0; i < brush_size; i++){
+      for(var j = 0; j < brush_size; j++){
+        pixel2d[grid_x+j][grid_y+i].next_state = 0;
+        pixel2d[grid_x+j][grid_y+i].changed = 1;
+        pixel2d[grid_x+j][grid_y+i].color = "#EEEEEE";
+      }
+    }
+  }
+}
+
 function place_pixel(){
   if(mouse_x<Width&&mouse_y<Height){
     var grid_x = Math.round(mouse_x/(640/grid_size)-1);
@@ -124,16 +143,16 @@ function place_pixel(){
         pixel2d[grid_x+j][grid_y+i].next_state = 1;
         pixel2d[grid_x+j][grid_y+i].changed = 1;
 
-        var rand_clr = 11 + Math.round((Math.random() * 20)+1);
+        var rand_clr = 55 + Math.round((Math.random() * 20)+1);
         var clr = "";
         if(active_color == "red"){
-          clr = "#" + rand_clr + ""+ "00" + "" + rand_clr;
+          clr = "#" + rand_clr + ""+ "00" + "" + "00";
         }
         if(active_color == "blue"){
-          clr = "#" + "00" + ""+ rand_clr + "" + rand_clr;
+          clr = "#" + "00" + ""+ "00" + "" + rand_clr;
         }
         if(active_color == "green"){
-          clr = "#" + rand_clr + ""+ rand_clr + "" + "00";
+          clr = "#" + "00" + ""+ rand_clr + "" + "00";
         }
 
         pixel2d[grid_x+j][grid_y+i].color = clr;
@@ -147,6 +166,7 @@ function draw_grid(){
   Red_Button.draw();
   Green_Button.draw();
   Blue_Button.draw();
+  Eraser_Button.draw();
 
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
@@ -228,7 +248,12 @@ function loop(timestamp){
   draw_canvas();
   draw_grid();
   if(mousedown == true){
-    place_pixel();
+    if(eraser == false){
+      place_pixel();
+    }
+    else{
+      delete_pixel();
+    }
   }
   lastRender = timestamp;
 
