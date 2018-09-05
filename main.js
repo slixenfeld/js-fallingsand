@@ -4,13 +4,14 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var Width = 640;
 var Height = 640;
-var fps = 100;
+var fps = 120;
 
-var grid_size = 80;
+var grid_size = 40;
 
 var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
+var brush_size = 4;
 
 var pixel2d = [];
 
@@ -70,8 +71,8 @@ function place_pixel(){
   var grid_x = Math.round(mouse_x/(640/grid_size)-1);
   var grid_y = Math.round(mouse_y/(640/grid_size)-1);
 
-  for(var i = 0; i < 10; i++){
-    for(var j = 0; j < 10; j++){
+  for(var i = 0; i < brush_size; i++){
+    for(var j = 0; j < brush_size; j++){
       pixel2d[grid_x+j][grid_y+i].next_state = 1;
       pixel2d[grid_x+j][grid_y+i].changed = 1;
     }
