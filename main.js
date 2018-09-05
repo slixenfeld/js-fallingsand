@@ -4,7 +4,7 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var Width = 640;
 var Height = 640;
-var fps = 30;
+var fps = 60;
 
 var grid_size = 32;
 
@@ -54,15 +54,20 @@ canvas.addEventListener('mousemove',function(evt){
   mouse_y = mousePos.y;
 },false);
 canvas.addEventListener('mousedown',function(evt){mousedown = true;},false);
-canvas.addEventListener('mouseup',function(evt){mousedown=false;},false);
+canvas.addEventListener('mouseup',function(evt){mousedown=false;
+/*
+alert("["+Math.round(mouse_x/(640/grid_size)-1)+ "]["+Math.round(mouse_y/(640/grid_size)-1)+"]: " +
+        pixel2d[Math.round(mouse_x/(640/grid_size)-1)][Math.round(mouse_y/(640/grid_size)-1)].state);
+*/
+},false);
 
 function update(){
 }
 
 function place_pixel(){
-    var grid_x = Math.round(mouse_x/(640/grid_size)-1);
-    var grid_y = Math.round(mouse_y/(600/grid_size)-1);
-    pixel2d[grid_x][grid_y].state = 1;
+  pixel2d[Math.round(mouse_x/(640/grid_size)-1)][Math.round(mouse_y/(640/grid_size)-1)].next_state = 1;
+  pixel2d[Math.round(mouse_x/(640/grid_size)-1)][Math.round(mouse_y/(640/grid_size)-1)].changed = 1;
+
 }
 
 
@@ -98,11 +103,11 @@ function draw_grid(){
         if(pixel2d[j][i].state == 1){
 
           var choice = Math.round((Math.random() * 2)+1);
-          color = "006d03";
+          color = "333333";
 
-          ctx.fillStyle = "#"+color; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(600/grid_size),(600/grid_size));
+          ctx.fillStyle = "#"+color; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
         }else{
-          ctx.fillStyle = "#EEEEEE"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(600/grid_size),(600/grid_size));
+          ctx.fillStyle = "#EEEEEE"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
         }
         //No Change now
         pixel2d[j][i].changed=false;
