@@ -4,9 +4,9 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var Width = 640;
 var Height = 640;
-var fps = 80;
+var fps = 100;
 
-var grid_size = 64;
+var grid_size = 80;
 
 var mouse_x = 0;
 var mouse_y = 0;
@@ -22,6 +22,8 @@ function Pixel(changed,state){
   this.changed = changed;
   this.state = 0;
   this.next_state = 0;
+  var rand_clr =44 + Math.round((Math.random() * 20)+1);
+  this.color = "#" + rand_clr + ""+ rand_clr + "" + rand_clr;
 }
 
 for(var i = 0; i < grid_size; i++){
@@ -68,14 +70,12 @@ function place_pixel(){
   var grid_x = Math.round(mouse_x/(640/grid_size)-1);
   var grid_y = Math.round(mouse_y/(640/grid_size)-1);
 
-  for(var i = 0; i < 2; i++){
-    for(var j = 0; j < 2; j++){
-    pixel2d[grid_x+j][grid_y+i].next_state = 1;
-    pixel2d[grid_x+j][grid_y+i].changed = 1;
+  for(var i = 0; i < 10; i++){
+    for(var j = 0; j < 10; j++){
+      pixel2d[grid_x+j][grid_y+i].next_state = 1;
+      pixel2d[grid_x+j][grid_y+i].changed = 1;
+    }
   }
-}
-
-
 }
 
 
@@ -83,18 +83,33 @@ function draw_grid(){
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
       if(pixel2d[j][i].state == 1){
+
+        var rand_stay =Math.round((Math.random() * 70)+1);
+
         if(i == grid_size-2){
 
         }
         else if(pixel2d[j][i+1].state == 0){
+        //Space down free
           pixel2d[j][i+1].next_state = 1;
+          pixel2d[j][i+1].changed = true;
           pixel2d[j][i].next_state = 0;
-
-          pixel2d[j][i].changed = true; //Change this
-          pixel2d[j][i+1].changed = true; //Change this
+          pixel2d[j][i].changed = true;
+        }
+        else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
+        //Space right down free
+            pixel2d[j+1][i+1].next_state = 1;
+            pixel2d[j+1][i+1].changed = true;
+            pixel2d[j][i].next_state = 0;
+            pixel2d[j][i].changed = true;
 
         }
-        else if (pixel2d[j][i+1].state == 1) {
+        else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
+        //Space left down free
+            pixel2d[j-1][i+1].next_state = 1;
+            pixel2d[j-1][i+1].changed = true;
+            pixel2d[j][i].next_state = 0;
+            pixel2d[j][i].changed = true;
 
         }
 
@@ -113,10 +128,10 @@ function draw_grid(){
         //    color = "338833";
         //  }
         //  else{
-            color = "333333";
+            color = pixel2d[j][i].color;
         //  }
 
-          ctx.fillStyle = "#"+color; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
+          ctx.fillStyle = color; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
         }else{
           ctx.fillStyle = "#EEEEEE"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
         }
