@@ -4,19 +4,41 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var Width = 640;
 var Height = 640;
-var fps = 60;
+var fps = 16;
 
-var grid_size = 35;
+var grid_size = 32;
 
 var mouse_x = 0;
 var mouse_y = 0;
-var pixel = [];
-for(var i = 0; i < grid_size; i ++){
-  pixel[i] = [];
+var pixel2d = [];
+
+ctx.clearRect(0,0,Width,Height);
+ctx.fillStyle = "#888888"; ctx.fillRect(0,0,Width,Height);
+ctx.fillStyle = "#EEEEEE"; ctx.fillRect(5,5,Width-10,Height-10);
+
+function Pixel(changed,state){
+  this.changed = changed;
+  this.state = state;
+  this.next_state = 0;
 }
+
+for(var i = 0; i < grid_size; i ++){
+  pixel2d[i] = [];
+}
+
+for(var i = 0; i < grid_size; i++){
+  for(var j = 0; j < grid_size; j++){
+    pixel2d[j][i] = new Pixel(false,0);
+  }
+}
+
+pixel2d[5][5].state = 1;
+
 
 ctx.fillStyle = "#999999";
 ctx.fillRect(0,0,800,640);
+ctx.fillStyle = "#EEEEEE";
+ctx.fillRect(5,5,Width-10,Height-10);
 
 function getMousePos(canvas,evt) {
   var rect = canvas.getBoundingClientRect();
@@ -32,27 +54,64 @@ canvas.addEventListener('mousemove',function(evt){
   mouse_y = mousePos.y;
 },false);
 
-function update(){}
+function update(){
+
+
+}
 
 function draw_grid(){
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
-      ctx.fillStyle = "#BBBBBB"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(600/grid_size),(600/grid_size));
-      pixel[j][i] = 0;
+      if(pixel2d[j][i].state == 1){
+
+        if(i == grid_size-2){
+
+        }
+        else if(pixel2d[j][i+1].state == 0){
+          pixel2d[j][i+1].next_state = 1;
+          pixel2d[j][i].next_state = 0;
+
+          pixel2d[j][i].changed = true; //Change this
+          pixel2d[j][i+1].changed = true; //Change this
+
+        }
+        else if (pixel2d[j][i+1].state == 1) {
+
+        }
+
+      }
     }
   }
+
+//Apply
+  for(var i = 0 ; i < grid_size-1; i++){
+    for(var j = 0; j < grid_size-1; j++){
+      if(pixel2d[j][i].changed == true){
+      pixel2d[j][i].state = pixel2d[j][i].next_state;
+        if(pixel2d[j][i].state == 1){
+          ctx.fillStyle = "#999999"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(600/grid_size),(600/grid_size));
+        }else{
+          ctx.fillStyle = "#EEEEEE"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(600/grid_size),(600/grid_size));
+        }
+        //No Change now
+        pixel2d[j][i].changed=false;
+      }
+
+    }
+  }
+
 
 }
 
 function draw_canvas(){
-  ctx.clearRect(0,0,Width,Height);
-  ctx.fillStyle = "#888888"; ctx.fillRect(0,0,Width,Height);
-  ctx.fillStyle = "#EEEEEE"; ctx.fillRect(5,5,Width-10,Height-10);
+  //ctx.clearRect(0,0,Width,Height);
+  //ctx.fillStyle = "#888888"; ctx.fillRect(0,0,Width,Height);
+  //ctx.fillStyle = "#EEEEEE"; ctx.fillRect(5,5,Width-10,Height-10);
 }
 
 function loop(timestamp){
   var progress = timestamp - lastRender;
-  update(progress);
+  //update(progress);
   draw_canvas();
   draw_grid();
   lastRender = timestamp;
@@ -64,7 +123,6 @@ function run(){
   setTimeout(function(){
     loop(lastRender);
     requestAnimationFrame(run);
-    inc_v += 0.03;
   }, 1000 / fps);
 }
 run();
