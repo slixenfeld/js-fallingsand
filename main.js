@@ -94,15 +94,17 @@ canvas.addEventListener('mousemove',function(evt){
   mouse_y = mousePos.y;
 },false);
 canvas.addEventListener('mousedown',function(evt){mousedown = true;
-
     if(Red_Button.checkClicked(mouse_x,mouse_y)){
       active_color = "red";
+      eraser = false;
     }
     if(Green_Button.checkClicked(mouse_x,mouse_y)){
       active_color = "green";
+      eraser = false;
     }
     if(Blue_Button.checkClicked(mouse_x,mouse_y)){
       active_color = "blue";
+      eraser = false;
     }
     if(Eraser_Button.checkClicked(mouse_x,mouse_y)){
       eraser = true;
