@@ -122,14 +122,17 @@ function update(){
 }
 
 function delete_pixel(){
-  if(mouse_x<Width&&mouse_y<Height){
+  if(mouse_x<Width&&mouse_y<Height&&mouse_x>1&&mouse_y>1){
     var grid_x = Math.round(mouse_x/(640/grid_size)-1);
     var grid_y = Math.round(mouse_y/(640/grid_size)-1);
     for(var i = 0; i < brush_size; i++){
       for(var j = 0; j < brush_size; j++){
-        pixel2d[grid_x+j][grid_y+i].next_state = 0;
-        pixel2d[grid_x+j][grid_y+i].changed = 1;
-        pixel2d[grid_x+j][grid_y+i].color = "#EEEEEE";
+        if((grid_x+brush_size)<=grid_size&&(grid_y+brush_size)<=grid_size
+          &&grid_x>0&&grid_y>0){
+          pixel2d[grid_x+j][grid_y+i].next_state = 0;
+          pixel2d[grid_x+j][grid_y+i].changed = 1;
+          pixel2d[grid_x+j][grid_y+i].color = "#EEEEEE";
+        }
       }
     }
   }
