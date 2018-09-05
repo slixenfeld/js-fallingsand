@@ -42,20 +42,32 @@ function Setting_Button(text,b_x,b_y){
   this.b_width = 90;
   this.b_height = 30;
   this.text = text;
+  this.pressed_count = 0;
 }
 Setting_Button.prototype.checkClicked=function(click_x,click_y){
   var return_v = false;
   if(click_x > this.b_x && click_x < (this.b_x+this.b_width) &&
-     click_y > this.b_y && click_y < (this.b_y+this.b_height) ){return_v = true;}
+     click_y > this.b_y && click_y < (this.b_y+this.b_height) ){this.pressed_count=50;  return_v = true;}
   return return_v;
 }
 Setting_Button.prototype.draw = function(){
 //Draw Rectangles
-  ctx.fillStyle = "#555555"; ctx.fillRect(this.b_x,this.b_y,this.b_width,this.b_height);
-  ctx.fillStyle = "#BBBBBB"; ctx.fillRect(this.b_x-2,this.b_y-2,this.b_width,this.b_height);
+
+  if(this.pressed_count>0){
+    ctx.fillStyle = "#555555"; ctx.fillRect(this.b_x+0.5,this.b_y+0.5,this.b_width,this.b_height);
+    ctx.fillStyle = "#BBBBBB"; ctx.fillRect(this.b_x,this.b_y,this.b_width,this.b_height);
+  }else{
+    ctx.fillStyle = "#555555"; ctx.fillRect(this.b_x,this.b_y,this.b_width,this.b_height);
+    ctx.fillStyle = "#BBBBBB"; ctx.fillRect(this.b_x-2,this.b_y-2,this.b_width,this.b_height);
+  }
+
 //Draw Text
   ctx.fillStyle = "#000000"; ctx.font = "22px Arial";
   ctx.fillText(this.text,this.b_x+2,this.b_y+24);
+
+  if(this.pressed_count>0){this.pressed_count--;}
+
+
 }
 
 var Red_Button = new Setting_Button("Rot",640,50);
@@ -142,7 +154,6 @@ function place_pixel(){
   if(mouse_x<Width&&mouse_y<Height&&mouse_x>1&&mouse_y>1){
     var grid_x = Math.round(mouse_x/(640/grid_size)-1);
     var grid_y = Math.round(mouse_y/(640/grid_size)-1);
-
     for(var i = 0; i < brush_size; i++){
       for(var j = 0; j < brush_size; j++){
         if((grid_x+brush_size)<=grid_size&&(grid_y+brush_size)<=grid_size
