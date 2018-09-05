@@ -4,9 +4,9 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var Width = 640;
 var Height = 640;
-var fps = 60;
+var fps = 80;
 
-var grid_size = 32;
+var grid_size = 64;
 
 var mouse_x = 0;
 var mouse_y = 0;
@@ -65,8 +65,16 @@ function update(){
 }
 
 function place_pixel(){
-  pixel2d[Math.round(mouse_x/(640/grid_size)-1)][Math.round(mouse_y/(640/grid_size)-1)].next_state = 1;
-  pixel2d[Math.round(mouse_x/(640/grid_size)-1)][Math.round(mouse_y/(640/grid_size)-1)].changed = 1;
+  var grid_x = Math.round(mouse_x/(640/grid_size)-1);
+  var grid_y = Math.round(mouse_y/(640/grid_size)-1);
+
+  for(var i = 0; i < 2; i++){
+    for(var j = 0; j < 2; j++){
+    pixel2d[grid_x+j][grid_y+i].next_state = 1;
+    pixel2d[grid_x+j][grid_y+i].changed = 1;
+  }
+}
+
 
 }
 
@@ -75,7 +83,6 @@ function draw_grid(){
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
       if(pixel2d[j][i].state == 1){
-
         if(i == grid_size-2){
 
         }
@@ -101,9 +108,13 @@ function draw_grid(){
       if(pixel2d[j][i].changed == true){
         pixel2d[j][i].state = pixel2d[j][i].next_state;
         if(pixel2d[j][i].state == 1){
-
-          var choice = Math.round((Math.random() * 2)+1);
-          color = "333333";
+          //var choice = Math.round((Math.random() * 2)+1);
+        //  if(pixel2d[j][i-2].state == 0){
+        //    color = "338833";
+        //  }
+        //  else{
+            color = "333333";
+        //  }
 
           ctx.fillStyle = "#"+color; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
         }else{
@@ -112,7 +123,6 @@ function draw_grid(){
         //No Change now
         pixel2d[j][i].changed=false;
       }
-
     }
   }
 }
