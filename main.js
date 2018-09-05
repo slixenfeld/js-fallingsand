@@ -187,7 +187,8 @@ function draw_grid(){
   Green_Button.draw();
   Blue_Button.draw();
   Eraser_Button.draw();
-
+  
+//Check Pixel State Conditions
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
       if(pixel2d[j][i].state == 1){
@@ -235,7 +236,7 @@ function draw_grid(){
     }
   }
 
-//Apply The Change
+//Apply And Draw
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
       if(pixel2d[j][i].changed == true){
