@@ -4,12 +4,14 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var Width = 640;
 var Height = 640;
-var fps = 16;
+var fps = 30;
 
 var grid_size = 32;
 
 var mouse_x = 0;
 var mouse_y = 0;
+var mousedown = false;
+
 var pixel2d = [];
 
 ctx.clearRect(0,0,Width,Height);
@@ -18,11 +20,11 @@ ctx.fillStyle = "#EEEEEE"; ctx.fillRect(5,5,Width-10,Height-10);
 
 function Pixel(changed,state){
   this.changed = changed;
-  this.state = state;
+  this.state = 0;
   this.next_state = 0;
 }
 
-for(var i = 0; i < grid_size; i ++){
+for(var i = 0; i < grid_size; i++){
   pixel2d[i] = [];
 }
 
@@ -32,7 +34,6 @@ for(var i = 0; i < grid_size; i++){
   }
 }
 
-pixel2d[5][5].state = 1;
 
 
 ctx.fillStyle = "#999999";
@@ -46,18 +47,24 @@ function getMousePos(canvas,evt) {
     x: evt.clientX - rect.left,
     y: evt.clientY - rect.top};
 }
-
 canvas.addEventListener('mousemove',function(evt){
   var mousePos = getMousePos(canvas, evt);
   var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
   mouse_x = mousePos.x;
   mouse_y = mousePos.y;
 },false);
+canvas.addEventListener('mousedown',function(evt){mousedown = true;},false);
+canvas.addEventListener('mouseup',function(evt){mousedown=false;},false);
 
 function update(){
-
-
 }
+
+function place_pixel(){
+    var grid_x = Math.round(mouse_x/(640/grid_size)-1);
+    var grid_y = Math.round(mouse_y/(600/grid_size)-1);
+    pixel2d[grid_x][grid_y].state = 1;
+}
+
 
 function draw_grid(){
   for(var i = 0 ; i < grid_size-1; i++){
@@ -87,9 +94,13 @@ function draw_grid(){
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
       if(pixel2d[j][i].changed == true){
-      pixel2d[j][i].state = pixel2d[j][i].next_state;
+        pixel2d[j][i].state = pixel2d[j][i].next_state;
         if(pixel2d[j][i].state == 1){
-          ctx.fillStyle = "#999999"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(600/grid_size),(600/grid_size));
+
+          var choice = Math.round((Math.random() * 2)+1);
+          color = "006d03";
+
+          ctx.fillStyle = "#"+color; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(600/grid_size),(600/grid_size));
         }else{
           ctx.fillStyle = "#EEEEEE"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(600/grid_size),(600/grid_size));
         }
@@ -99,8 +110,6 @@ function draw_grid(){
 
     }
   }
-
-
 }
 
 function draw_canvas(){
@@ -114,6 +123,9 @@ function loop(timestamp){
   //update(progress);
   draw_canvas();
   draw_grid();
+  if(mousedown == true){
+    place_pixel();
+  }
   lastRender = timestamp;
 
 }
