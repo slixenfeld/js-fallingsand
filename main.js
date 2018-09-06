@@ -13,7 +13,7 @@ var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
 var eraser = false;
-var brush_size = 4;
+var brush_size = 10;
 var pixel2d = [];
 
 var add_red = false;
@@ -70,6 +70,9 @@ Setting_Button.prototype.draw = function(){
 
     if(this.text=="Water"){
       ctx.fillStyle = "#555599"; ctx.fillRect(this.b_x+0.5,this.b_y+0.5,this.b_width,this.b_height);
+    }
+    else if(this.text=="Eraser"){
+      ctx.fillStyle = "#995555"; ctx.fillRect(this.b_x+0.5,this.b_y+0.5,this.b_width,this.b_height);
     }else{
       ctx.fillStyle = "#555555"; ctx.fillRect(this.b_x+0.5,this.b_y+0.5,this.b_width,this.b_height);
     }
@@ -96,9 +99,12 @@ var Green_Button = new Setting_Button("Green",640,100);
 var Blue_Button = new Setting_Button("Blue",640,150);
 
 var Water_Button = new Setting_Button("Water",640,220);
-var Wall_Button = new Setting_Button("Wall",640,260);
+var Fire_Button = new Setting_Button("Fire",640,220);
 
+
+var Wall_Button = new Setting_Button("Wall",640,260);
 var Eraser_Button = new Setting_Button("Eraser",640,400);
+
 var Pause_Button = new Setting_Button("Pause",640,450);
 
 
@@ -322,14 +328,6 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
             //Space down free
               exchange_pixel(j,i,0,1);
             }
-            else if (pixel2d[j+1][i+1].state == 0 && pixel2d[j+1][i+1].next_state == 0  && j != grid_size-2) {
-            //Space right down free
-              exchange_pixel(j,i,1,1);
-            }
-            else if (pixel2d[j-1][i+1].state == 0 && pixel2d[j-1][i+1].next_state == 0 && j != 1) {
-            //Space left down free
-              exchange_pixel(j,i,-1,1);
-            }
             //Else if free space
             else{
               var rand_water = Math.round((Math.random() * 100)+1);
@@ -342,8 +340,7 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
               //Space right free
                 exchange_pixel(j,i,1,0);
               }//Else if free space
-
-            }
+            }//Else,
           }//Type
           else if (pixel2d[j][i].type == "wall"){
 
