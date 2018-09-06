@@ -103,6 +103,9 @@ function getMousePos(canvas,evt) {
     y: evt.clientY - rect.top};
 }
 canvas.addEventListener('mousemove',function(evt){
+  
+  if(!(mouse_x<Width&&mouse_y<Height&&mouse_x>10&&mouse_y>10)){mousedown=false;}
+
   var mousePos = getMousePos(canvas, evt);
   var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
   mouse_x = mousePos.x;
