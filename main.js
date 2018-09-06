@@ -262,40 +262,21 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
             if(i == grid_size-2){
             }
             else if(pixel2d[j][i+1].state == 0){
-            //Space down free
 
+            //Space down free
             exchange_pixel(j,i,0,1);
 
-
-            /*    pixel2d[j][i+1].next_state = 1;
-                pixel2d[j][i+1].changed = true;
-                pixel2d[j][i+1].color = pixel2d[j][i].color;
-
-                pixel2d[j][i].next_state = 0;
-                pixel2d[j][i].changed = true;
-                pixel2d[j][i].color = "#EEEEEE";
-*/
             }
             else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
-            //Space right down free
-                pixel2d[j+1][i+1].next_state = 1;
-                pixel2d[j+1][i+1].changed = true;
-                pixel2d[j+1][i+1].color = pixel2d[j][i].color;
 
-                pixel2d[j][i].next_state = 0;
-                pixel2d[j][i].changed = true;
-                pixel2d[j][i].color = "#EEEEEE";
+            //Space right down free
+            exchange_pixel(j,i,1,1);
 
             }
             else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
-            //Space left down free
-                pixel2d[j-1][i+1].next_state = 1;
-                pixel2d[j-1][i+1].changed = true;
-                pixel2d[j-1][i+1].color = pixel2d[j][i].color;
 
-                pixel2d[j][i].next_state = 0;
-                pixel2d[j][i].changed = true;
-                pixel2d[j][i].color = "#EEEEEE";
+            //Space left down free
+            exchange_pixel(j,i,-1,1);
 
             }//Else if free space
           }//Type
@@ -305,80 +286,38 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
             if(i == grid_size-2){
             }
             else if(pixel2d[j][i+1].state == 0){
+
             //Space down free
-                pixel2d[j][i+1].next_state = 1;
-                pixel2d[j][i+1].changed = true;
-                pixel2d[j][i+1].color = pixel2d[j][i].color;
-
-                var temp_type = pixel2d[j][i+1].type;
-                pixel2d[j][i+1].type = pixel2d[j][i].type;
-                pixel2d[j][i].type = temp_type;
-
-                pixel2d[j][i].next_state = 0;
-                pixel2d[j][i].changed = true;
-                pixel2d[j][i].color = "#EEEEEE";
+            exchange_pixel(j,i,0,1);
 
             }
             else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
+
             //Space right down free
-                pixel2d[j+1][i+1].next_state = 1;
-                pixel2d[j+1][i+1].changed = true;
-                pixel2d[j+1][i+1].color = pixel2d[j][i].color;
-
-                var temp_type = pixel2d[j+1][i+1].type;
-                pixel2d[j+1][i+1].type = pixel2d[j][i].type;
-                pixel2d[j][i].type = temp_type;
-
-                pixel2d[j][i].next_state = 0;
-                pixel2d[j][i].changed = true;
-                pixel2d[j][i].color = "#EEEEEE";
+            exchange_pixel(j,i,1,1);
 
             }
             else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
+
             //Space left down free
-                pixel2d[j-1][i+1].next_state = 1;
-                pixel2d[j-1][i+1].changed = true;
-                pixel2d[j-1][i+1].color = pixel2d[j][i].color;
+            exchange_pixel(j,i,-1,1);
 
-                var temp_type = pixel2d[j-1][i+1].type;
-                pixel2d[j-1][i+1].type = pixel2d[j][i].type;
-                pixel2d[j][i].type = temp_type;
-
-                pixel2d[j][i].next_state = 0;
-                pixel2d[j][i].changed = true;
-                pixel2d[j][i].color = "#EEEEEE";
             }//Else if free space
             else{
 
             var rand_water = Math.round((Math.random() * 100)+1);
 
             if (pixel2d[j-1][i].state == 0 && rand_water >= 50 && j != 1) {
+
             //Space left free
-                pixel2d[j-1][i].next_state = 1;
-                pixel2d[j-1][i].changed = true;
-                pixel2d[j-1][i].color = pixel2d[j][i].color;
+            exchange_pixel(j,i,-1,0);
 
-                var temp_type = pixel2d[j-1][i].type;
-                pixel2d[j-1][i].type = pixel2d[j][i].type;
-                pixel2d[j][i].type = temp_type;
-
-                pixel2d[j][i].next_state = 0;
-                pixel2d[j][i].changed = true;
-                pixel2d[j][i].color = "#EEEEEE";
             }//Else if free space
             else if (pixel2d[j+1][i].state == 0 && rand_water < 50 && j != 1) {
+
             //Space right free
-                pixel2d[j+1][i].next_state = 1;
-                pixel2d[j+1][i].changed = true;
-                pixel2d[j+1][i].color = pixel2d[j][i].color;
+            exchange_pixel(j,i,1,0);
 
-                var temp_type = pixel2d[j+1][i].type;
-                pixel2d[j+1][i].type = pixel2d[j][i].type;
-                pixel2d[j][i].type = temp_type;
-
-                pixel2d[j][i].next_state = 0;
-                pixel2d[j][i].changed = true;
-                pixel2d[j][i].color = "#EEEEEE";
             }//Else if free space
 
           }
