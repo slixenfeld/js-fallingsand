@@ -311,7 +311,7 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
 
 
           else if (pixel2d[j][i].type == "water"){
-            
+
             if(i == grid_size-2){
             }
             else if(pixel2d[j][i+1].state == 0 && pixel2d[j][i+1].next_state == 0){
