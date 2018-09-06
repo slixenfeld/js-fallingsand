@@ -7,8 +7,7 @@ var ctx = canvas.getContext("2d");
 var Width = 640;
 var Height = 640;
 var fps = 144;
-
-var grid_size = 40;
+var grid_size = 64;
 
 var mouse_x = 0;
 var mouse_y = 0;
@@ -141,6 +140,7 @@ function delete_pixel(){
       for(var j = 0; j < brush_size; j++){
         if((grid_x+brush_size)<=grid_size&&(grid_y+brush_size)<=grid_size
           &&grid_x>0&&grid_y>0){
+          pixel2d[grid_x+j][grid_y+i].state = 0;
           pixel2d[grid_x+j][grid_y+i].next_state = 0;
           pixel2d[grid_x+j][grid_y+i].changed = 1;
           pixel2d[grid_x+j][grid_y+i].color = "#EEEEEE";
