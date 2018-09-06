@@ -347,6 +347,7 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
           }//Type
 
 
+
         }//State==1
       }//paused
     }//Loop X
