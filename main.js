@@ -19,6 +19,8 @@ var pixel2d = [];
 var active_color = "red";
 var paused = false;
 
+var in_window_only = false;
+
 
 ctx.clearRect(0,0,Width,Height);
 ctx.fillStyle = "#888888"; ctx.fillRect(0,0,Width,Height);
@@ -103,9 +105,9 @@ function getMousePos(canvas,evt) {
     y: evt.clientY - rect.top};
 }
 canvas.addEventListener('mousemove',function(evt){
-  
-  if(!(mouse_x<Width&&mouse_y<Height&&mouse_x>10&&mouse_y>10)){mousedown=false;}
-
+  if(in_window_only){
+    if(!(mouse_x<Width&&mouse_y<Height&&mouse_x>10&&mouse_y>10)){mousedown=false;}
+  }
   var mousePos = getMousePos(canvas, evt);
   var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
   mouse_x = mousePos.x;
@@ -135,6 +137,7 @@ canvas.addEventListener('mousedown',function(evt){mousedown = true;
     }
 
 },false);
+
 canvas.addEventListener('mouseup',function(evt){mousedown=false;
 /*
 alert("["+Math.round(mouse_x/(640/grid_size)-1)+ "]["+Math.round(mouse_y/(640/grid_size)-1)+"]: " +
