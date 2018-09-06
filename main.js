@@ -13,7 +13,7 @@ var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
 var eraser = false;
-var brush_size = 3;
+var brush_size = 2;
 var pixel2d = [];
 
 var add_red = false;
@@ -24,7 +24,7 @@ var selected_type = "sand";
 var active_color = "red";
 var paused = false;
 
-var in_window_only = true;
+var in_window_only = false;
 
 
 ctx.clearRect(0,0,Width,Height);
@@ -289,19 +289,19 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
             var rand_stay =Math.round((Math.random() * 70)+1);
             if(i == grid_size-2){
             }
-            else if(pixel2d[j][i+1].state == 0){
+            else if(pixel2d[j][i+1].state == 0 && pixel2d[j][i+1].next_state == 0){
 
             //Space down free
             exchange_pixel(j,i,0,1);
 
             }
-            else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
+            else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && pixel2d[j+1][i+1].next_state == 0  && j != grid_size-2) {
 
             //Space right down free
             exchange_pixel(j,i,1,1);
 
             }
-            else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
+            else if (pixel2d[j-1][i+1].state == 0 && pixel2d[j-1][i+1].next_state == 0  && rand_stay > 40 && j != 1) {
 
             //Space left down free
             exchange_pixel(j,i,-1,1);
@@ -311,21 +311,22 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
 
 
           else if (pixel2d[j][i].type == "water"){
+            
             if(i == grid_size-2){
             }
-            else if(pixel2d[j][i+1].state == 0){
+            else if(pixel2d[j][i+1].state == 0 && pixel2d[j][i+1].next_state == 0){
 
             //Space down free
             exchange_pixel(j,i,0,1);
 
             }
-            else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
+            else if (pixel2d[j+1][i+1].state == 0 && pixel2d[j+1][i+1].next_state == 0  && j != grid_size-2) {
 
             //Space right down free
             exchange_pixel(j,i,1,1);
 
             }
-            else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
+            else if (pixel2d[j-1][i+1].state == 0 && pixel2d[j-1][i+1].next_state == 0 && j != 1) {
 
             //Space left down free
             exchange_pixel(j,i,-1,1);
@@ -335,13 +336,13 @@ function exchange_pixel(base_j,base_i,add_j,add_i){
 
             var rand_water = Math.round((Math.random() * 100)+1);
 
-            if (pixel2d[j-1][i].state == 0 && rand_water >= 50 && j != 1) {
+            if (pixel2d[j-1][i].state == 0 && pixel2d[j-1][i].next_state == 0 && rand_water >= 50 && j != 1) {
 
             //Space left free
             exchange_pixel(j,i,-1,0);
 
             }//Else if free space
-            else if (pixel2d[j+1][i].state == 0 && rand_water < 50 && j != 1) {
+            else if (pixel2d[j+1][i].state == 0 && pixel2d[j+1][i].next_state == 0 && rand_water < 50 && j != 1) {
 
             //Space right free
             exchange_pixel(j,i,1,0);
