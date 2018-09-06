@@ -6,7 +6,7 @@ var ctx = canvas.getContext("2d");
 
 var Width = 640;
 var Height = 640;
-var fps = 64;
+var fps = 80;
 var grid_size = 40;
 
 var mouse_x = 0;
@@ -67,7 +67,12 @@ Setting_Button.prototype.draw = function(){
     ctx.fillStyle = "#555555"; ctx.fillRect(this.b_x+0.5,this.b_y+0.5,this.b_width,this.b_height);
     ctx.fillStyle = "#BBBBBB"; ctx.fillRect(this.b_x,this.b_y,this.b_width,this.b_height);
   }else{
-    ctx.fillStyle = "#555555"; ctx.fillRect(this.b_x,this.b_y,this.b_width,this.b_height);
+
+    if(this.text=="Water"){
+      ctx.fillStyle = "#555599"; ctx.fillRect(this.b_x+0.5,this.b_y+0.5,this.b_width,this.b_height);
+    }else{
+      ctx.fillStyle = "#555555"; ctx.fillRect(this.b_x+0.5,this.b_y+0.5,this.b_width,this.b_height);
+    }
     ctx.fillStyle = "#BBBBBB"; ctx.fillRect(this.b_x-2,this.b_y-2,this.b_width,this.b_height);
   }
 
@@ -87,10 +92,14 @@ Setting_Button.prototype.draw = function(){
 }
 
 var Red_Button = new Setting_Button("Rot",640,50);
-var Green_Button = new Setting_Button("Green",640,150);
-var Blue_Button = new Setting_Button("Blue",640,250);
+var Green_Button = new Setting_Button("Green",640,100);
+var Blue_Button = new Setting_Button("Blue",640,150);
+
+var Water_Button = new Setting_Button("Water",640,220);
+
 var Eraser_Button = new Setting_Button("Eraser",640,400);
 var Pause_Button = new Setting_Button("Pause",640,450);
+
 
 
 
@@ -135,6 +144,7 @@ canvas.addEventListener('mousedown',function(evt){mousedown = true;
       if(add_red==false){ add_red = true; BREAK = true; Red_Button.button_on = true; }
       if(add_red==true&&BREAK==false){ add_red = false; Red_Button.button_on = false; }
       active_color = "red";
+      selected_type = "sand";
       eraser = false;
     }
     if(Green_Button.checkClicked(mouse_x,mouse_y)){
@@ -142,6 +152,7 @@ canvas.addEventListener('mousedown',function(evt){mousedown = true;
       if(add_green==false){ add_green = true; BREAK = true; Green_Button.button_on = true;}
       if(add_green==true&&BREAK==false){ add_green = false; Green_Button.button_on = false; }
       active_color = "green";
+      selected_type = "sand";
       eraser = false;
     }
     if(Blue_Button.checkClicked(mouse_x,mouse_y)){
@@ -149,8 +160,19 @@ canvas.addEventListener('mousedown',function(evt){mousedown = true;
       if(add_blue==false){ add_blue = true; BREAK = true; Blue_Button.button_on = true;}
       if(add_blue==true&&BREAK==false){ add_blue = false; Blue_Button.button_on = false; }
       active_color = "blue";
+      selected_type = "sand";
       eraser = false;
     }
+    if(Water_Button.checkClicked(mouse_x,mouse_y)){
+
+      Red_Button.button_on = false;
+      Green_Button.button_on = false;
+      Blue_Button.button_on = false;
+      selected_type = "water";
+      eraser = false;
+    }
+
+
     if(Eraser_Button.checkClicked(mouse_x,mouse_y)){
       eraser = true;
     }
@@ -208,6 +230,10 @@ function place_pixel(){
           if(add_blue){clr += rand_clr;}else{clr += "00";}
           if(add_red==false&&add_green==false&&add_blue==false){clr="#"+rand_clr+""+rand_clr+""+rand_clr; }
 
+          if(selected_type == "water"){
+            clr="#"+(rand_clr+20).toString(16)+""+(rand_clr+20).toString(16)+""+(rand_clr+70).toString(16);
+          }
+
           pixel2d[grid_x+j][grid_y+i].color = clr;
 
         }
@@ -236,6 +262,8 @@ function draw_grid(){
   Blue_Button.draw();
   Eraser_Button.draw();
   Pause_Button.draw();
+  Water_Button.draw();
+
 
 function exchange_pixel(base_j,base_i,add_j,add_i){
   pixel2d[base_j+add_j][base_i+add_i].next_state = 1;
