@@ -16,6 +16,10 @@ var eraser = false;
 var brush_size = 2;
 var pixel2d = [];
 
+var add_red = false;
+var add_green = false;
+var add_blue = false;
+
 var active_color = "red";
 var paused = false;
 
@@ -33,7 +37,7 @@ function Pixel(changed,state){
 
   var rand_clr = 11 + Math.round((Math.random() * 20)+1);
   this.color = "#" + rand_clr + ""+ "00" + "" + rand_clr;
-
+  this.type = "sand";
 
 }
 
@@ -45,6 +49,7 @@ function Setting_Button(text,b_x,b_y){
   this.b_height = 30;
   this.text = text;
   this.pressed_count = 0;
+  this.button_on = false;
 }
 
 Setting_Button.prototype.checkClicked=function(click_x,click_y){
@@ -68,6 +73,12 @@ Setting_Button.prototype.draw = function(){
 //Draw Text
   ctx.fillStyle = "#000000"; ctx.font = "22px Arial";
   ctx.fillText(this.text,this.b_x+2,this.b_y+24);
+
+  if(this.button_on == true){
+    ctx.fillStyle = "#005500"; ctx.fillRect(70+this.b_x,7+this.b_y,14,14);
+    ctx.fillStyle = "#00FF00"; ctx.fillRect(70+this.b_x-1.5,7+this.b_y-1.5,14,14);
+
+  }
 
   if(this.pressed_count>0){this.pressed_count--;}
 
@@ -115,14 +126,23 @@ canvas.addEventListener('mousemove',function(evt){
 },false);
 canvas.addEventListener('mousedown',function(evt){mousedown = true;
     if(Red_Button.checkClicked(mouse_x,mouse_y)){
+      var BREAK = false;
+      if(add_red==false){ add_red = true; BREAK = true; Red_Button.button_on = true; }
+      if(add_red==true&&BREAK==false){ add_red = false; Red_Button.button_on = false; }
       active_color = "red";
       eraser = false;
     }
     if(Green_Button.checkClicked(mouse_x,mouse_y)){
+      var BREAK = false;
+      if(add_green==false){ add_green = true; BREAK = true; Green_Button.button_on = true;}
+      if(add_green==true&&BREAK==false){ add_green = false; Green_Button.button_on = false; }
       active_color = "green";
       eraser = false;
     }
     if(Blue_Button.checkClicked(mouse_x,mouse_y)){
+      var BREAK = false;
+      if(add_blue==false){ add_blue = true; BREAK = true; Blue_Button.button_on = true;}
+      if(add_blue==true&&BREAK==false){ add_blue = false; Blue_Button.button_on = false; }
       active_color = "blue";
       eraser = false;
     }
@@ -178,7 +198,15 @@ function place_pixel(){
           pixel2d[grid_x+j][grid_y+i].changed = 1;
 
           var rand_clr = 55 + Math.round((Math.random() * 20)+1);
-          var clr = "";
+          var clr = "#";
+
+          if(add_red){clr += rand_clr;}else{clr += "00";}
+          if(add_green){clr += rand_clr;}else{clr += "00";}
+          if(add_blue){clr += rand_clr;}else{clr += "00";}
+          if(add_red==false&&add_green==false&&add_blue==false){clr="#"+rand_clr+""+rand_clr+""+rand_clr; }
+
+
+/*
           if(active_color == "red"){
             clr = "#" + rand_clr + ""+ "00" + "" + "00";
           }
@@ -188,7 +216,7 @@ function place_pixel(){
           if(active_color == "green"){
             clr = "#" + "00" + ""+ rand_clr + "" + "00";
           }
-
+*/
           pixel2d[grid_x+j][grid_y+i].color = clr;
 
         }
@@ -222,51 +250,50 @@ function draw_grid(){
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
       if(!paused){
-      if(pixel2d[j][i].state == 1){
+        if(pixel2d[j][i].state == 1){
 
-        var rand_stay =Math.round((Math.random() * 70)+1);
+          if(pixel2d[j][i].type == "sand"){
+            var rand_stay =Math.round((Math.random() * 70)+1);
+            if(i == grid_size-2){
+            }
+            else if(pixel2d[j][i+1].state == 0){
+            //Space down free
+                pixel2d[j][i+1].next_state = 1;
+                pixel2d[j][i+1].changed = true;
+                pixel2d[j][i+1].color = pixel2d[j][i].color;
 
-        if(i == grid_size-2){
+                pixel2d[j][i].next_state = 0;
+                pixel2d[j][i].changed = true;
+                pixel2d[j][i].color = "#EEEEEE";
 
-        }
-        else if(pixel2d[j][i+1].state == 0){
-        //Space down free
-            pixel2d[j][i+1].next_state = 1;
-            pixel2d[j][i+1].changed = true;
-            pixel2d[j][i+1].color = pixel2d[j][i].color;
+            }
+            else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
+            //Space right down free
+                pixel2d[j+1][i+1].next_state = 1;
+                pixel2d[j+1][i+1].changed = true;
+                pixel2d[j+1][i+1].color = pixel2d[j][i].color;
 
-            pixel2d[j][i].next_state = 0;
-            pixel2d[j][i].changed = true;
-            pixel2d[j][i].color = "#EEEEEE";
+                pixel2d[j][i].next_state = 0;
+                pixel2d[j][i].changed = true;
+                pixel2d[j][i].color = "#EEEEEE";
 
-        }
-        else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
-        //Space right down free
-            pixel2d[j+1][i+1].next_state = 1;
-            pixel2d[j+1][i+1].changed = true;
-            pixel2d[j+1][i+1].color = pixel2d[j][i].color;
+            }
+            else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
+            //Space left down free
+                pixel2d[j-1][i+1].next_state = 1;
+                pixel2d[j-1][i+1].changed = true;
+                pixel2d[j-1][i+1].color = pixel2d[j][i].color;
 
-            pixel2d[j][i].next_state = 0;
-            pixel2d[j][i].changed = true;
-            pixel2d[j][i].color = "#EEEEEE";
+                pixel2d[j][i].next_state = 0;
+                pixel2d[j][i].changed = true;
+                pixel2d[j][i].color = "#EEEEEE";
 
-        }
-        else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
-        //Space left down free
-            pixel2d[j-1][i+1].next_state = 1;
-            pixel2d[j-1][i+1].changed = true;
-            pixel2d[j-1][i+1].color = pixel2d[j][i].color;
-
-            pixel2d[j][i].next_state = 0;
-            pixel2d[j][i].changed = true;
-            pixel2d[j][i].color = "#EEEEEE";
-
-        }
-
-      }
-     }
-    }
-  }
+            }//Else if free space
+          }//Type
+        }//State==1
+      }//paused
+    }//Loop X
+  }//LoopY
 
 //Apply And Draw
   for(var i = 1 ; i < grid_size-1; i++){
