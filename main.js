@@ -21,7 +21,6 @@ var add_green = false;
 var add_blue = false;
 
 var selected_type = "sand";
-
 var active_color = "red";
 var paused = false;
 
@@ -238,6 +237,20 @@ function draw_grid(){
   Eraser_Button.draw();
   Pause_Button.draw();
 
+function exchange_pixel(base_j,base_i,add_j,add_i){
+  pixel2d[base_j+add_j][base_i+add_i].next_state = 1;
+  pixel2d[base_j+add_j][base_i+add_i].changed = true;
+  pixel2d[base_j+add_j][base_i+add_i].color = pixel2d[j][i].color;
+
+  var temp_type = pixel2d[j+add_j][i+add_i].type;
+  pixel2d[base_j+add_j][base_i+add_i].type = pixel2d[base_j][base_i].type;
+  pixel2d[base_j][base_i].type = temp_type;
+
+  pixel2d[base_j][base_i].next_state = 0;
+  pixel2d[base_j][base_i].changed = true;
+  pixel2d[base_j][base_i].color = "#EEEEEE";
+}
+
 //Check Pixel State Conditions
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
@@ -250,14 +263,18 @@ function draw_grid(){
             }
             else if(pixel2d[j][i+1].state == 0){
             //Space down free
-                pixel2d[j][i+1].next_state = 1;
+
+            exchange_pixel(j,i,0,1);
+
+
+            /*    pixel2d[j][i+1].next_state = 1;
                 pixel2d[j][i+1].changed = true;
                 pixel2d[j][i+1].color = pixel2d[j][i].color;
 
                 pixel2d[j][i].next_state = 0;
                 pixel2d[j][i].changed = true;
                 pixel2d[j][i].color = "#EEEEEE";
-
+*/
             }
             else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
             //Space right down free
