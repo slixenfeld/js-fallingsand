@@ -6,24 +6,26 @@ var ctx = canvas.getContext("2d");
 
 var Width = 640;
 var Height = 640;
-var fps = 80;
-var grid_size = 32;
+var fps = 64;
+var grid_size = 40;
 
 var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
 var eraser = false;
-var brush_size = 2;
+var brush_size = 3;
 var pixel2d = [];
 
 var add_red = false;
 var add_green = false;
 var add_blue = false;
 
+var selected_type = "sand";
+
 var active_color = "red";
 var paused = false;
 
-var in_window_only = false;
+var in_window_only = true;
 
 
 ctx.clearRect(0,0,Width,Height);
@@ -109,12 +111,15 @@ ctx.fillRect(0,0,800,640);
 ctx.fillStyle = "#EEEEEE";
 ctx.fillRect(5,5,Width-10,Height-10);
 
+//      Mouse Functions       //
+
 function getMousePos(canvas,evt) {
   var rect = canvas.getBoundingClientRect();
   return {
     x: evt.clientX - rect.left,
     y: evt.clientY - rect.top};
 }
+
 canvas.addEventListener('mousemove',function(evt){
   if(in_window_only){
     if(!(mouse_x<Width&&mouse_y<Height&&mouse_x>10&&mouse_y>10)){mousedown=false;}
@@ -124,6 +129,7 @@ canvas.addEventListener('mousemove',function(evt){
   mouse_x = mousePos.x;
   mouse_y = mousePos.y;
 },false);
+
 canvas.addEventListener('mousedown',function(evt){mousedown = true;
     if(Red_Button.checkClicked(mouse_x,mouse_y)){
       var BREAK = false;
@@ -158,11 +164,8 @@ canvas.addEventListener('mousedown',function(evt){mousedown = true;
 
 },false);
 
-canvas.addEventListener('mouseup',function(evt){mousedown=false;
-/*
-alert("["+Math.round(mouse_x/(640/grid_size)-1)+ "]["+Math.round(mouse_y/(640/grid_size)-1)+"]: " +
-        pixel2d[Math.round(mouse_x/(640/grid_size)-1)][Math.round(mouse_y/(640/grid_size)-1)].state);
-*/
+canvas.addEventListener('mouseup',function(evt){
+  mousedown=false;
 },false);
 
 function update(){
@@ -194,6 +197,7 @@ function place_pixel(){
       for(var j = 0; j < brush_size; j++){
         if((grid_x+brush_size)<=grid_size&&(grid_y+brush_size)<=grid_size
           &&grid_x>0&&grid_y>0){
+          pixel2d[grid_x+j][grid_y+i].type = selected_type;
           pixel2d[grid_x+j][grid_y+i].next_state = 1;
           pixel2d[grid_x+j][grid_y+i].changed = 1;
 
@@ -205,18 +209,6 @@ function place_pixel(){
           if(add_blue){clr += rand_clr;}else{clr += "00";}
           if(add_red==false&&add_green==false&&add_blue==false){clr="#"+rand_clr+""+rand_clr+""+rand_clr; }
 
-
-/*
-          if(active_color == "red"){
-            clr = "#" + rand_clr + ""+ "00" + "" + "00";
-          }
-          if(active_color == "blue"){
-            clr = "#" + "00" + ""+ "00" + "" + rand_clr;
-          }
-          if(active_color == "green"){
-            clr = "#" + "00" + ""+ rand_clr + "" + "00";
-          }
-*/
           pixel2d[grid_x+j][grid_y+i].color = clr;
 
         }
@@ -290,6 +282,91 @@ function draw_grid(){
 
             }//Else if free space
           }//Type
+
+
+          else if (pixel2d[j][i].type == "water"){
+            if(i == grid_size-2){
+            }
+            else if(pixel2d[j][i+1].state == 0){
+            //Space down free
+                pixel2d[j][i+1].next_state = 1;
+                pixel2d[j][i+1].changed = true;
+                pixel2d[j][i+1].color = pixel2d[j][i].color;
+
+                var temp_type = pixel2d[j][i+1].type;
+                pixel2d[j][i+1].type = pixel2d[j][i].type;
+                pixel2d[j][i].type = temp_type;
+
+                pixel2d[j][i].next_state = 0;
+                pixel2d[j][i].changed = true;
+                pixel2d[j][i].color = "#EEEEEE";
+
+            }
+            else if (pixel2d[j+1][i+1].state == 0 && rand_stay > 40 && j != grid_size-2) {
+            //Space right down free
+                pixel2d[j+1][i+1].next_state = 1;
+                pixel2d[j+1][i+1].changed = true;
+                pixel2d[j+1][i+1].color = pixel2d[j][i].color;
+
+                var temp_type = pixel2d[j+1][i+1].type;
+                pixel2d[j+1][i+1].type = pixel2d[j][i].type;
+                pixel2d[j][i].type = temp_type;
+
+                pixel2d[j][i].next_state = 0;
+                pixel2d[j][i].changed = true;
+                pixel2d[j][i].color = "#EEEEEE";
+
+            }
+            else if (pixel2d[j-1][i+1].state == 0 && rand_stay > 40 && j != 1) {
+            //Space left down free
+                pixel2d[j-1][i+1].next_state = 1;
+                pixel2d[j-1][i+1].changed = true;
+                pixel2d[j-1][i+1].color = pixel2d[j][i].color;
+
+                var temp_type = pixel2d[j-1][i+1].type;
+                pixel2d[j-1][i+1].type = pixel2d[j][i].type;
+                pixel2d[j][i].type = temp_type;
+
+                pixel2d[j][i].next_state = 0;
+                pixel2d[j][i].changed = true;
+                pixel2d[j][i].color = "#EEEEEE";
+            }//Else if free space
+            else{
+
+            var rand_water = Math.round((Math.random() * 100)+1);
+
+            if (pixel2d[j-1][i].state == 0 && rand_water >= 50 && j != 1) {
+            //Space left free
+                pixel2d[j-1][i].next_state = 1;
+                pixel2d[j-1][i].changed = true;
+                pixel2d[j-1][i].color = pixel2d[j][i].color;
+
+                var temp_type = pixel2d[j-1][i].type;
+                pixel2d[j-1][i].type = pixel2d[j][i].type;
+                pixel2d[j][i].type = temp_type;
+
+                pixel2d[j][i].next_state = 0;
+                pixel2d[j][i].changed = true;
+                pixel2d[j][i].color = "#EEEEEE";
+            }//Else if free space
+            else if (pixel2d[j+1][i].state == 0 && rand_water < 50 && j != 1) {
+            //Space right free
+                pixel2d[j+1][i].next_state = 1;
+                pixel2d[j+1][i].changed = true;
+                pixel2d[j+1][i].color = pixel2d[j][i].color;
+
+                var temp_type = pixel2d[j+1][i].type;
+                pixel2d[j+1][i].type = pixel2d[j][i].type;
+                pixel2d[j][i].type = temp_type;
+
+                pixel2d[j][i].next_state = 0;
+                pixel2d[j][i].changed = true;
+                pixel2d[j][i].color = "#EEEEEE";
+            }//Else if free space
+
+          }
+          }//Type
+
         }//State==1
       }//paused
     }//Loop X
@@ -313,7 +390,7 @@ function draw_grid(){
       //}
     }
   }
-}https://github.com/slxfld/js-fallingsand.git
+}
 
 function draw_canvas(){
   //ctx.clearRect(0,0,Width,Height);
