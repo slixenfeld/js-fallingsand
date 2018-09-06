@@ -1,7 +1,5 @@
 # JS-FallingSand
-
-# Description
-a falling sand style simulation in Javascript
+a fallingsand simulation in Javascript
 
 # License
 GPLv3
