@@ -14,7 +14,7 @@ var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
 var eraser = false;
-var brush_size = 10;
+var brush_size = 8;
 var pixel2d = [];
 
 var active_color = "red";
@@ -182,10 +182,15 @@ function place_pixel(){
 }
 
 
-function draw_value_at_cursor(){
-
-
-
+function draw_value_at_cursor() {
+  //Draw Text
+  if(mouse_x<Width&&mouse_y<Height&&mouse_x>10&&mouse_y>10){
+    var displaytext = "["+Math.round(mouse_x/(640/grid_size)-1)+ "]["+Math.round(mouse_y/(640/grid_size)-1)+"]: " +
+            pixel2d[Math.round(mouse_x/(640/grid_size)-1)][Math.round(mouse_y/(640/grid_size)-1)].state;
+    ctx.clearRect(640,590,100,60);
+    ctx.fillStyle = "#000000"; ctx.font = "22px Arial";
+    ctx.fillText(displaytext,640,620);
+  }
 }
 
 
@@ -245,17 +250,17 @@ function draw_grid(){
   }
 
 //Apply And Draw
-  for(var i = 0 ; i < grid_size-1; i++){
-    for(var j = 0; j < grid_size-1; j++){
+  for(var i = 1 ; i < grid_size-1; i++){
+    for(var j = 1; j < grid_size-1; j++){
      // if(pixel2d[j][i].changed == true){
         pixel2d[j][i].state = pixel2d[j][i].next_state;
         if(pixel2d[j][i].state == 1){
 
             color = pixel2d[j][i].color;
 
-          ctx.fillStyle = color; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
+          ctx.fillStyle = color; ctx.fillRect(0+(j*(640/grid_size)),0+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
         }else{
-          ctx.fillStyle = "#EEEEEE"; ctx.fillRect(10+(j*(640/grid_size)),10+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
+          ctx.fillStyle = "#EEEEEE"; ctx.fillRect(0+(j*(640/grid_size)),0+(i*(640/grid_size)),(640/grid_size),(640/grid_size));
         }
         //No Change now
         pixel2d[j][i].changed=false;
@@ -276,6 +281,7 @@ function loop(timestamp){
   //update(progress);
   draw_canvas();
   draw_grid();
+  draw_value_at_cursor();
   if(mousedown == true){
     if(eraser == false){
       place_pixel();
