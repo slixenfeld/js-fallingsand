@@ -6,17 +6,18 @@ var ctx = canvas.getContext("2d");
 
 var Width = 640;
 var Height = 640;
-var fps = 144;
-var grid_size = 64;
+var fps = 80;
+var grid_size = 32;
 
 var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
 var eraser = false;
-var brush_size = 8;
+var brush_size = 2;
 var pixel2d = [];
 
 var active_color = "red";
+var paused = false;
 
 
 ctx.clearRect(0,0,Width,Height);
@@ -43,12 +44,14 @@ function Setting_Button(text,b_x,b_y){
   this.text = text;
   this.pressed_count = 0;
 }
+
 Setting_Button.prototype.checkClicked=function(click_x,click_y){
   var return_v = false;
   if(click_x > this.b_x && click_x < (this.b_x+this.b_width) &&
      click_y > this.b_y && click_y < (this.b_y+this.b_height) ){this.pressed_count=50;  return_v = true;}
   return return_v;
 }
+
 Setting_Button.prototype.draw = function(){
 //Draw Rectangles
 
@@ -73,6 +76,7 @@ var Red_Button = new Setting_Button("Rot",640,50);
 var Green_Button = new Setting_Button("Green",640,150);
 var Blue_Button = new Setting_Button("Blue",640,250);
 var Eraser_Button = new Setting_Button("Eraser",640,400);
+var Pause_Button = new Setting_Button("Pause",640,450);
 
 
 
@@ -119,6 +123,12 @@ canvas.addEventListener('mousedown',function(evt){mousedown = true;
     }
     if(Eraser_Button.checkClicked(mouse_x,mouse_y)){
       eraser = true;
+    }
+    if(Pause_Button.checkClicked(mouse_x,mouse_y)){
+      var BREAK = false;
+      if(paused==false){ paused = true; BREAK = true; }
+      if(paused==true&&BREAK==false){ paused = false;  }
+
     }
 
 },false);
@@ -200,10 +210,12 @@ function draw_grid(){
   Green_Button.draw();
   Blue_Button.draw();
   Eraser_Button.draw();
+  Pause_Button.draw();
 
 //Check Pixel State Conditions
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
+      if(!paused){
       if(pixel2d[j][i].state == 1){
 
         var rand_stay =Math.round((Math.random() * 70)+1);
@@ -246,6 +258,7 @@ function draw_grid(){
         }
 
       }
+     }
     }
   }
 
