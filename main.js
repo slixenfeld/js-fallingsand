@@ -6,7 +6,7 @@ var ctx = canvas.getContext("2d");
 
 var Width = 640;
 var Height = 640;
-var fps = 120;
+var fps = 144;
 
 var grid_size = 40;
 
@@ -14,7 +14,7 @@ var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
 var eraser = false;
-var brush_size = 5;
+var brush_size = 10;
 var pixel2d = [];
 
 var active_color = "red";
@@ -181,13 +181,21 @@ function place_pixel(){
   }
 }
 
+
+function draw_value_at_cursor(){
+
+
+
+}
+
+
 function draw_grid(){
 
   Red_Button.draw();
   Green_Button.draw();
   Blue_Button.draw();
   Eraser_Button.draw();
-  
+
 //Check Pixel State Conditions
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
@@ -239,7 +247,7 @@ function draw_grid(){
 //Apply And Draw
   for(var i = 0 ; i < grid_size-1; i++){
     for(var j = 0; j < grid_size-1; j++){
-      if(pixel2d[j][i].changed == true){
+     // if(pixel2d[j][i].changed == true){
         pixel2d[j][i].state = pixel2d[j][i].next_state;
         if(pixel2d[j][i].state == 1){
 
@@ -251,10 +259,10 @@ function draw_grid(){
         }
         //No Change now
         pixel2d[j][i].changed=false;
-      }
+      //}
     }
   }
-}
+}https://github.com/slxfld/js-fallingsand.git
 
 function draw_canvas(){
   //ctx.clearRect(0,0,Width,Height);
