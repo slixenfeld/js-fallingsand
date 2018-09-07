@@ -100,11 +100,9 @@ var Blue_Button = new Setting_Button("Blue",640,150);
 
 var Water_Button = new Setting_Button("Water",640,220);
 var Fire_Button = new Setting_Button("Fire",640,220);
-
-
 var Wall_Button = new Setting_Button("Wall",640,260);
-var Eraser_Button = new Setting_Button("Eraser",640,400);
 
+var Eraser_Button = new Setting_Button("Eraser",640,400);
 var Pause_Button = new Setting_Button("Pause",640,450);
 
 
