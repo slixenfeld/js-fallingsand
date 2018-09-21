@@ -7,13 +7,13 @@ var ctx = canvas.getContext("2d");
 var Width = 640;
 var Height = 640;
 var fps = 80;
-var grid_size = 40;
+var grid_size = 60;
 
 var mouse_x = 0;
 var mouse_y = 0;
 var mousedown = false;
 var eraser = false;
-var brush_size = 10;
+var brush_size = 2;
 var pixel2d = [];
 
 var add_red = false;
