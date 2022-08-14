@@ -49,7 +49,7 @@ export default class FallingSand extends React.Component {
 
     var Width = 640;
     var Height = 640;
-    var fps = 80;
+    var fps = 60;
     var grid_size = 60;
 
     var mouse_x = 0;
@@ -68,6 +68,7 @@ export default class FallingSand extends React.Component {
       static Wall = new PixelType('Wall');
       static Water = new PixelType('Water');
       static Fire = new PixelType('Fire');
+      static Air = new PixelType('Air');
     }
 
     var selected_type = PixelType.Sand;
@@ -83,11 +84,16 @@ export default class FallingSand extends React.Component {
         this.changed = changed;
         this.exists = 0;
         this.next_state = 0;
-
+        
         var rand_clr = 11 + Math.round((Math.random() * 20) + 1);
         this.color = "#" + rand_clr + "" + "00" + "" + rand_clr;
-        this.type = PixelType.Sand;
+        this.type = PixelType.Air;
       }
+
+      draw() {
+
+      }
+
     }
 
     class Setting_Button {
@@ -116,24 +122,18 @@ export default class FallingSand extends React.Component {
         //Draw Rectangles
 
         if (this.pressed_count > 0) {
-          ctx.fillStyle = "#555555";
-          ctx.fillRect(this.b_x + 0.5, this.b_y + 0.5, this.b_width, this.b_height);
-          ctx.fillStyle = "#BBBBBB";
-          ctx.fillRect(this.b_x, this.b_y, this.b_width, this.b_height);
-        } else {
+          drawRect("#555555", this.b_x + 0.5, this.b_y + 0.5, this.b_width, this.b_height);
 
+          drawRect("#BBBBBB", this.b_x, this.b_y, this.b_width, this.b_height)
+        } else {
           if (this.text === PixelType.Water) {
-            ctx.fillStyle = "#555599";
-            ctx.fillRect(this.b_x + 0.5, this.b_y + 0.5, this.b_width, this.b_height);
+            drawRect("#555599", this.b_x + 0.5, this.b_y + 0.5, this.b_width, this.b_height)
           } else if (this.text === "Eraser") {
-            ctx.fillStyle = "#995555";
-            ctx.fillRect(this.b_x + 0.5, this.b_y + 0.5, this.b_width, this.b_height);
+            drawRect("#995555", this.b_x + 0.5, this.b_y + 0.5, this.b_width, this.b_height)
           } else {
-            ctx.fillStyle = "#555555";
-            ctx.fillRect(this.b_x + 0.5, this.b_y + 0.5, this.b_width, this.b_height);
+            drawRect("#555555", this.b_x + 0.5, this.b_y + 0.5, this.b_width, this.b_height)
           }
-          ctx.fillStyle = "#BBBBBB";
-          ctx.fillRect(this.b_x - 2, this.b_y - 2, this.b_width, this.b_height);
+          drawRect("#BBBBBB", this.b_x - 2, this.b_y - 2, this.b_width, this.b_height)
         }
 
         //Draw Text
@@ -142,10 +142,10 @@ export default class FallingSand extends React.Component {
         ctx.fillText(this.text, this.b_x + 2, this.b_y + 24);
 
         if (this.button_on === true) {
-          ctx.fillStyle = "#005500";
-          ctx.fillRect(70 + this.b_x, 7 + this.b_y, 14, 14);
-          ctx.fillStyle = "#00FF00";
-          ctx.fillRect(70 + this.b_x - 1.5, 7 + this.b_y - 1.5, 14, 14);
+
+          drawRect("#005500", 70 + this.b_x, 7 + this.b_y, 14, 14)
+
+          drawRect("#00FF00", 70 + this.b_x - 1.5, 7 + this.b_y - 1.5, 14, 14)
         }
 
         if (this.pressed_count > 0) {
@@ -165,7 +165,12 @@ export default class FallingSand extends React.Component {
     var Eraser_Button = new Setting_Button("Eraser", 640, 400);
     var Pause_Button = new Setting_Button("Pause", 640, 450);
     var Clear_Button = new Setting_Button("Clear", 640, 500);
-    
+
+
+    function drawRect(colorCode, x, y, w, h) {
+      ctx.fillStyle = colorCode;
+      ctx.fillRect(x, y, w, h);
+    }
 
     //Initialize Pixel Grid
     function initGrid() {
@@ -187,10 +192,8 @@ export default class FallingSand extends React.Component {
 
     initGrid()
 
-    ctx.fillStyle = "#999999";
-    ctx.fillRect(0, 0, 800, 640);
-    ctx.fillStyle = "#EEEEEE";
-    ctx.fillRect(5, 5, Width - 10, Height - 10);
+    drawRect("#999999", 0, 0, 800, 640);
+    drawRect("#EEEEEE", 5, 5, Width - 10, Height - 10);
 
     function getMousePos(canvas, evt) {
       var rect = canvas.getBoundingClientRect();
@@ -309,6 +312,8 @@ export default class FallingSand extends React.Component {
               pixel2d[grid_x + j][grid_y + i].next_state = 0;
               pixel2d[grid_x + j][grid_y + i].changed = 1;
               pixel2d[grid_x + j][grid_y + i].color = "#EEEEEE";
+              pixel2d[grid_x + j][grid_y + i].type = PixelType.Air;
+              
             }
           }
         }
@@ -368,29 +373,30 @@ export default class FallingSand extends React.Component {
     }
 
     function exchange_pixel(base_j, base_i, add_j, add_i) {
+
       pixel2d[base_j + add_j][base_i + add_i].next_state = 1;
       pixel2d[base_j + add_j][base_i + add_i].changed = true;
-      pixel2d[base_j + add_j][base_i + add_i].color = pixel2d[base_j][base_i].color;
 
-      var temp_type = pixel2d[base_j][base_i].type;
+      var temp_color = pixel2d[base_j +add_j][base_i +add_i].color
+      pixel2d[base_j + add_j][base_i + add_i].color = pixel2d[base_j][base_i].color;
+      pixel2d[base_j][base_i].color = temp_color
+
+      var temp_type = pixel2d[base_j + add_j][base_i + add_i].type;
       pixel2d[base_j + add_j][base_i + add_i].type = pixel2d[base_j][base_i].type;
       pixel2d[base_j][base_i].type = temp_type;
 
-      pixel2d[base_j][base_i].next_state = 0;
       pixel2d[base_j][base_i].changed = true;
-      pixel2d[base_j][base_i].color = "#EEEEEE";
+
+      if (pixel2d[base_j][base_i].type === PixelType.Air) {
+        pixel2d[base_j][base_i].next_state = 0;
+      } else {
+        pixel2d[base_j][base_i].next_state = 1;
+      }
+
+
     }
 
-    function draw_grid() {
-
-      Red_Button.draw();
-      Green_Button.draw();
-      Blue_Button.draw();
-      Eraser_Button.draw();
-      Clear_Button.draw();
-      Pause_Button.draw();
-      Water_Button.draw();
-      Wall_Button.draw();
+    function updateGrid() {
 
       //Check Pixel State Conditions
       for (var i = 0; i < grid_size - 1; i++) {
@@ -400,71 +406,83 @@ export default class FallingSand extends React.Component {
 
               if (pixel2d[j][i].type === PixelType.Sand) {
                 var rand_stay = Math.round((Math.random() * 70) + 1);
-                if (i === grid_size - 2) { } else if (pixel2d[j][i + 1].exists === 0 && pixel2d[j][i + 1].next_state === 0) {
-                  //Space down free
+                if (i === grid_size - 2) { } else if ((pixel2d[j][i + 1].exists === 0 && pixel2d[j][i + 1].next_state === 0)  
+                || (pixel2d[j][i + 1].type === PixelType.Water && pixel2d[j][i].changed === false) ) {
+
                   exchange_pixel(j, i, 0, 1);
-                } else if (pixel2d[j + 1][i + 1].exists === 0 && rand_stay > 40 && pixel2d[j + 1][i + 1].next_state === 0 && j !== grid_size - 2) {
-                  //Space right down free
+
+                } else if ((pixel2d[j + 1][i + 1].exists === 0 && rand_stay > 40 && pixel2d[j + 1][i + 1].next_state === 0) 
+                ||  (pixel2d[j + 1][i + 1].type === PixelType.Water && pixel2d[j][i].changed === false) && j !== grid_size - 2) {
+  
                   exchange_pixel(j, i, 1, 1);
-                } else if (pixel2d[j - 1][i + 1].exists === 0 && pixel2d[j - 1][i + 1].next_state === 0 && rand_stay > 40 && j !== 1) {
-                  //Space left down free
+
+                } else if (((pixel2d[j - 1][i + 1].exists === 0 && pixel2d[j - 1][i + 1].next_state === 0 && rand_stay > 40) 
+                ||  (pixel2d[j -1 ][i + 1].type === PixelType.Water) && pixel2d[j][i].changed === false) && j !== 1) {
+   
                   exchange_pixel(j, i, -1, 1);
-                } //Else if free space
-              } //Type
+                }
+              }
               else if (pixel2d[j][i].type === PixelType.Water) {
                 if (i === grid_size - 2) { } else if (pixel2d[j][i + 1].exists === 0 && pixel2d[j][i + 1].next_state == 0) {
-                  //Space down free
+
                   exchange_pixel(j, i, 0, 1);
                 }
-                //Else if free space
+
                 else {
                   var rand_water = Math.round((Math.random() * 100) + 1);
 
                   if (pixel2d[j - 1][i].exists === 0 && pixel2d[j - 1][i].next_state === 0 && rand_water >= 50 && j !== 1) {
-                    //Space left free
+
                     exchange_pixel(j, i, -1, 0);
-                  } //Else if free space
+                  }
                   else if (pixel2d[j + 1][i].exists === 0 && pixel2d[j + 1][i].next_state === 0 && rand_water < 50 && j !== 1) {
-                    //Space right free
+
                     exchange_pixel(j, i, 1, 0);
-                  } //Else if free space
-                } //Else,
-              } //Type
+                  }
+                }
+              }
               else if (pixel2d[j][i].type === PixelType.Wall) {
 
-              } //Type
-            } //State==1
-          } //paused
-        } //Loop X
-      } //LoopY
-
-      //Apply And Draw
-
-      for (i = 1; i < grid_size - 1; i++) {
-        for (j = 1; j < grid_size - 1; j++) {
-
-          pixel2d[j][i].exists = pixel2d[j][i].next_state;
-          if (pixel2d[j][i].exists === 1) {
-
-            color = pixel2d[j][i].color;
-
-            ctx.fillStyle = color;
-            ctx.fillRect(0 + (j * (640 / grid_size)), 0 + (i * (640 / grid_size)), (640 / grid_size), (640 / grid_size));
-          } else {
-            ctx.fillStyle = "#EEEEEE";
-            ctx.fillRect(0 + (j * (640 / grid_size)), 0 + (i * (640 / grid_size)), (640 / grid_size), (640 / grid_size));
+              }
+            }
           }
+          pixel2d[j][i].exists = pixel2d[j][i].next_state;
+        }
+      }
+    }
 
+    function drawUI() {
+      Red_Button.draw();
+      Green_Button.draw();
+      Blue_Button.draw();
+      Eraser_Button.draw();
+      Clear_Button.draw();
+      Pause_Button.draw();
+      Water_Button.draw();
+      Wall_Button.draw();
+    }
+
+    function drawGrid() {
+
+      for (var i = 1; i < grid_size - 1; i++) {
+        for (var j = 1; j < grid_size - 1; j++) {
+          if (pixel2d[j][i].exists === 1) {
+            drawRect(pixel2d[j][i].color, 0 + (j * (640 / grid_size)), 0 + (i * (640 / grid_size)), (640 / grid_size), (640 / grid_size))
+          } else if (pixel2d[j][i].type == PixelType.Air) {
+            drawRect("#EEEEEE", 0 + (j * (640 / grid_size)), 0 + (i * (640 / grid_size)), (640 / grid_size), (640 / grid_size))
+          }
           pixel2d[j][i].changed = false;
-
         }
       }
     }
 
     function loop(timestamp) {
-      var progress = timestamp - lastRender;
-      draw_grid();
+
+      drawUI()
+      updateGrid()
+      drawGrid()
       draw_value_at_cursor();
+
       if (mousedown === true) {
         if (eraser === false) {
           place_pixel();
@@ -481,10 +499,8 @@ export default class FallingSand extends React.Component {
       setTimeout(function () {
         loop(lastRender);
         requestAnimationFrame(run);
-      }, 1000 / fps);
+      }, 11);
     }
     run();
-
-
   }
 }
