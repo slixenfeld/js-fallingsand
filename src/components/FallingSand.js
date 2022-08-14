@@ -20,7 +20,6 @@ export default class FallingSand extends React.Component {
           }}
         >
           <tbody>
-
             <tr>
               <td colSpan="3" height="15%">
                 <canvas ref={this.myCanvas} width="740" height="640"></canvas>
@@ -45,7 +44,7 @@ export default class FallingSand extends React.Component {
   game = () => {
 
     var canvas = this.myCanvas.current;
-    var ctx = this.myCanvas.current.getContext('2d');
+    var ctx = canvas.getContext('2d');
 
 
     var Width = 640;
@@ -71,14 +70,6 @@ export default class FallingSand extends React.Component {
 
     var in_window_only = false;
 
-
-    // ctx.clearRect(0, 0, Width, Height);
-    ctx.fillStyle = "#888888";
-    ctx.fillRect(0, 0, Width, Height);
-    ctx.fillStyle = "#EEEEEE";
-    ctx.fillRect(5, 5, Width - 10, Height - 10);
-
-
     function Pixel(changed, state) {
       this.changed = changed;
       this.state = 0;
@@ -87,7 +78,6 @@ export default class FallingSand extends React.Component {
       var rand_clr = 11 + Math.round((Math.random() * 20) + 1);
       this.color = "#" + rand_clr + "" + "00" + "" + rand_clr;
       this.type = "sand";
-
     }
 
     function Setting_Button(text, b_x, b_y) {
@@ -145,17 +135,14 @@ export default class FallingSand extends React.Component {
         ctx.fillRect(70 + this.b_x, 7 + this.b_y, 14, 14);
         ctx.fillStyle = "#00FF00";
         ctx.fillRect(70 + this.b_x - 1.5, 7 + this.b_y - 1.5, 14, 14);
-
       }
 
       if (this.pressed_count > 0) {
         this.pressed_count--;
       }
-
-
     }
 
-    var Red_Button = new Setting_Button("Rot", 640, 50);
+    var Red_Button = new Setting_Button("Red", 640, 50);
     var Green_Button = new Setting_Button("Green", 640, 100);
     var Blue_Button = new Setting_Button("Blue", 640, 150);
 
@@ -166,19 +153,19 @@ export default class FallingSand extends React.Component {
     var Eraser_Button = new Setting_Button("Eraser", 640, 400);
     var Pause_Button = new Setting_Button("Pause", 640, 450);
 
-
-
-
     //Initialize Pixel Grid
-    for (var i = 0; i < grid_size; i++) {
-      pixel2d[i] = [];
-    }
-    for (var i = 0; i < grid_size; i++) {
-      for (var j = 0; j < grid_size; j++) {
-        pixel2d[j][i] = new Pixel(false, 0);
+    function initGrid() {
+      for (var i = 0; i < grid_size; i++) {
+        pixel2d[i] = [];
+      }
+      for (var i = 0; i < grid_size; i++) {
+        for (var j = 0; j < grid_size; j++) {
+          pixel2d[j][i] = new Pixel(false, 0);
+        }
       }
     }
 
+    initGrid()
 
 
     ctx.fillStyle = "#999999";
@@ -379,6 +366,19 @@ export default class FallingSand extends React.Component {
       }
     }
 
+    function exchange_pixel(base_j, base_i, add_j, add_i) {
+      pixel2d[base_j + add_j][base_i + add_i].next_state = 1;
+      pixel2d[base_j + add_j][base_i + add_i].changed = true;
+      pixel2d[base_j + add_j][base_i + add_i].color = pixel2d[base_j][base_i].color;
+
+      var temp_type = pixel2d[base_j][base_i].type;
+      pixel2d[base_j + add_j][base_i + add_i].type = pixel2d[base_j][base_i].type;
+      pixel2d[base_j][base_i].type = temp_type;
+
+      pixel2d[base_j][base_i].next_state = 0;
+      pixel2d[base_j][base_i].changed = true;
+      pixel2d[base_j][base_i].color = "#EEEEEE";
+    }
 
     function draw_grid() {
 
@@ -389,20 +389,6 @@ export default class FallingSand extends React.Component {
       Pause_Button.draw();
       Water_Button.draw();
       Wall_Button.draw();
-
-      function exchange_pixel(base_j, base_i, add_j, add_i) {
-        pixel2d[base_j + add_j][base_i + add_i].next_state = 1;
-        pixel2d[base_j + add_j][base_i + add_i].changed = true;
-        pixel2d[base_j + add_j][base_i + add_i].color = pixel2d[j][i].color;
-
-        var temp_type = pixel2d[j + add_j][i + add_i].type;
-        pixel2d[base_j + add_j][base_i + add_i].type = pixel2d[base_j][base_i].type;
-        pixel2d[base_j][base_i].type = temp_type;
-
-        pixel2d[base_j][base_i].next_state = 0;
-        pixel2d[base_j][base_i].changed = true;
-        pixel2d[base_j][base_i].color = "#EEEEEE";
-      }
 
       //Check Pixel State Conditions
       for (var i = 0; i < grid_size - 1; i++) {
